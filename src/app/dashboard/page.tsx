@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 
 export default function Dashboard(){
 
-const [invoices,setInvoices]=useState([])
+const [invoices,setInvoices]=useState<any[]>([])
 
 useEffect(()=>{
 
@@ -16,8 +16,12 @@ fetch("/api/invoices")
 
 async function viewInvoice(name:string){
 
-const res=await fetch(`/api/invoice/${name}`)
-const data=await res.json()
+const match = name.match(/(\d{2}-\d{2})/)
+
+const fy = match ? `20${match[1]}` : "2025-26"
+
+const res = await fetch(`/api/invoice/${fy}/${name}`)
+const data = await res.json()
 
 window.open(data.url,"_blank")
 
@@ -25,35 +29,41 @@ window.open(data.url,"_blank")
 
 return(
 
-<div className="p-10">
+<div>
 
 <h1 className="text-3xl font-bold mb-6">
-Ribionic CA Portal
+Invoices
 </h1>
 
-<table className="w-full border">
+<div className="bg-slate-800 rounded-xl overflow-hidden">
 
-<thead>
-<tr className="border">
-<th className="p-2">Invoice</th>
-<th>Action</th>
+<table className="w-full">
+
+<thead className="bg-slate-700 text-left">
+
+<tr>
+<th className="p-4">Invoice</th>
+<th className="p-4">Action</th>
 </tr>
+
 </thead>
 
 <tbody>
 
-{invoices.map((inv:any)=>(
-<tr key={inv.name} className="border">
+{invoices.map((inv)=>(
+<tr key={inv.name} className="border-t border-slate-700">
 
-<td className="p-2">{inv.name}</td>
+<td className="p-4">{inv.name}</td>
 
-<td>
+<td className="p-4">
+
 <button
-className="bg-blue-600 text-white px-3 py-1 rounded"
+className="bg-teal-600 hover:bg-teal-700 px-4 py-1 rounded"
 onClick={()=>viewInvoice(inv.name)}
 >
 View
 </button>
+
 </td>
 
 </tr>
@@ -62,6 +72,8 @@ View
 </tbody>
 
 </table>
+
+</div>
 
 </div>
 
